@@ -1,4 +1,3 @@
-# client.py (Python)
 import socket
 
 ip = input("Podaj IP celu: ")
@@ -12,7 +11,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         cmd = input("CMD> ")
         if cmd.lower() in ['exit', 'quit']:
             break
+
         s.sendall(cmd.encode())
 
-        data = s.recv(4096).decode()
-        print(data)
+        # odbierz dane
+        data = s.recv(4096)
+
+        try:
+            # próbujemy utf-8
+            output = data.decode("utf-8")
+        except UnicodeDecodeError:
+            # jeśli nie działa, próbujemy windowsowe
+            output = data.decode("cp1250", errors="replace")
+
+        print(output)
